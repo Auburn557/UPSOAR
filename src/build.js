@@ -136,25 +136,24 @@ const qrCodeFile = async function () {
 	}));
 	await fs.writeFile("app-qr-code.png", qrCodePNG, "binary")
 }();
+
+const report = JSON.stringify({
+	qrVersion: qrCode.version,
+	segments: qrCode.segments.map(segment => [segment.mode.id, segment.data.length]),
+	used: bits +
+		" of " +
+		version40Bits +
+		" (" +
+		(bits * 100 / version40Bits).toFixed(3) +
+		"%) bits",
+	bytesLeft: (version40Bits - bits) / 8,
+	dataURL: appURL
+}, undefined, "\t");
+const reportFile = fs.writeFile("app-report.json", report, "utf8");
+
 await HTMLFile;
 await URLFile;
 await qrCodeFile;
+await reportFile;
 
-console.log(
-	"QR Code Version: " +
-	qrCode.version +
-	"\nSegments:\n" +
-	qrCode.segments.map(segment => segment.mode.id + ": " + segment.data.length).join(", ") +
-	"\nUsed " +
-	bits +
-	" of " +
-	version40Bits
-	+ " (" +
-	(bits * 100 / version40Bits).toFixed(3) +
-	"%) bits. " +
-	(version40Bits - bits) +
-	" bits (" +
-	Math.floor((version40Bits - bits) / 8) +
-	" bytes) left. URL:\n" +
-	appURL
-);
+console.log(report);

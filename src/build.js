@@ -74,6 +74,20 @@ function escapeURL(url) {
 }
 
 const appHTML =
+	"<META NAME=VIEWPORT CONTENT=WIDTH=DEVICE-WIDTH>" +
+	"<TITLE>UPSOAR</TITLE>" +
+	"<BODY STYLE=BACKGROUND-COLOR:#000>" +
+	"<CANVAS ID=0 STYLE=" +
+	"WIDTH:100%;" +
+	"MAX-WIDTH:200VMIN;" +
+	"POSITION:FIXED;" +
+	"TOP:0;" +
+	"BOTTOM:0;" +
+	"LEFT:0;" +
+	"RIGHT:0;" +
+	"MARGIN:AUTO;" +
+	"IMAGE-RENDERING:PIXELATED" +
+	">" +
 	"<SCRIPT>" +
 	(await appMinified).replace("{SPRITE_URL}", await spriteSheetURL) +
 	"</SCRIPT>";

@@ -1,14 +1,5 @@
 // Bindings
 
-/** Binding to `window.document` */
-let doc = document;
-
-/**
- * Binding to `document.createElement`. Saves 2 characters with 2 references.
- * @type {Document["createElement"]}
- */
-let createElement = doc.createElement.bind(doc);
-
 /**
  * Binding to `Date.now`. Saves 3 characters with 2 references.
  */
@@ -21,11 +12,8 @@ let pi = math.PI;
 let twoPi = pi * 2;
 
 /** The canvas used for displaying the game and retreiving sprite data. */
-let canvas = createElement("canvas");
+let canvas = /** @type {HTMLCanvasElement} */(document.getElementById(/** @type {*} */(0)));
 let graphics = canvas.getContext("2d");
-
-/** Used for setting the viewport in mobile browsers */
-let meta = createElement("meta");
 
 /**
  * Retreives the red value for the pixel at the given coordinate in the sprite sheet.
@@ -202,16 +190,9 @@ let spriteSheet = new Image();
  */
 let spriteSheetData;
 
-doc.title = "Upsoar";
-
 // Load the image
 spriteSheet.src = "{SPRITE_URL}";
 spriteSheet.onload = _ => {
-	// Set viewport for mobile browsers
-	meta.name = "viewport";
-	meta.content = "width=device-width,initial-scale=1";
-	doc.head.append(meta);
-
 	// Retrieve pixels from image
 	graphics.drawImage(spriteSheet, 0, 0);
 	spriteSheetData = graphics
@@ -223,24 +204,10 @@ spriteSheet.onload = _ => {
 	onkeyup = onpointerup = /** @type {(event: *) => *} */(_ => isPressed = 0);
 
 	// Set sky color
-	doc.body.style.backgroundColor = graphics.fillStyle = "#112";
+	graphics.fillStyle = "#112";
 
 	// Set canvas to use nearest neighbor scaling
 	graphics.imageSmoothingEnabled = /** @type {*} */(0);
-
-	doc.body.append(canvas);
-
-	// Automatically size canvas to viewport
-	canvas.style.cssText =
-		"WIDTH:100%;" +
-		"MAX-WIDTH:200VMIN;" +
-		"POSITION:FIXED;" +
-		"TOP:0;" +
-		"BOTTOM:0;" +
-		"LEFT:0;" +
-		"RIGHT:0;" +
-		"MARGIN:AUTO;" +
-		"IMAGE-RENDERING:PIXELATED";
 
 	// Main game loop. Runs at a fixed interval.
 	setInterval(_ => {

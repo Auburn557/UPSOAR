@@ -1,0 +1,19 @@
+{
+  "name": "upsoar",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "build": "node src/build.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "optipng": "^4.1.0",
+    "pngjs": "^6.0.0",
+    "terser": "^5.14.2",
+    "qrcode": "^1.5.1"
+  }
+}

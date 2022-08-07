@@ -101,9 +101,9 @@ const appHTML =
 	(await appMinified).replace("{SPRITE_URL}", await spriteSheetURL) +
 	"</SCRIPT>";
 
-const HTMLFile = fs.writeFile("app.html", appHTML, "utf8");
+const HTMLFile = fs.writeFile("app/index.html", appHTML, "utf8");
 const appURL = "DATA:TEXT/HTML;-PASTE-IN-WEB-BROWSER-," + escapeURL(appHTML);
-const URLFile = fs.writeFile("app-url.txt", appURL, "utf8");
+const URLFile = fs.writeFile("app/url.txt", appURL, "utf8");
 const qrCode = QRCode.create(appURL, { errorCorrectionLevel: "L" });
 /** The maximum number of bits a QR Code can possibly store. */
 const version40Bits = 23648;
@@ -157,7 +157,7 @@ const qrCodeFile = async function () {
 		margin: 4,
 		scale: 1
 	}));
-	await fs.writeFile("app-qr-code.png", qrCodePNG, "binary")
+	await fs.writeFile("app/qr-code.png", qrCodePNG, "binary")
 }();
 
 const report = JSON.stringify({
@@ -172,7 +172,7 @@ const report = JSON.stringify({
 	bytesLeft: (version40Bits - bits) / 8,
 	dataURL: appURL
 }, undefined, "\t");
-const reportFile = fs.writeFile("app-report.json", report, "utf8");
+const reportFile = fs.writeFile("app/report.json", report, "utf8");
 
 await HTMLFile;
 await URLFile;

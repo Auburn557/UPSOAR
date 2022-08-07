@@ -8,6 +8,7 @@ let now = Date.now;
 /** Binding to `window.Math` */
 let math = Math;
 let sign = math.sign;
+let abs = math.abs;
 let pi = math.PI;
 let twoPi = pi * 2;
 
@@ -95,7 +96,7 @@ let x = { v: 39 * levelScale };
  * @type {Interpolation}
  */
 //let y = { v: 59 * levelScale };
-let y = { v: 0 * levelScale };
+let y = { v: 2 * levelScale };
 
 /**
  * The horizontal component of the dragon's velocity. Greater numbers are to the right.
@@ -228,15 +229,12 @@ spriteSheet.onload = _ => {
 		// Apply gravity
 		ySpeed += 0.5;
 
-		let currentLevelX = (x.v / levelScale) | 0;
 		let currentLevelY = (y.v / levelScale) | 0;
-		let previousLevelX = (x.p / levelScale) | 0;
-		let previousLevelY = (y.p / levelScale) | 0;
 		let xDirection = sign(x.v - x.p);
 		let yDirection = sign(y.v - y.p);
 		let velocityDirection = math.atan2(ySpeed * facing, xSpeed * facing);
 		let speed = math.sqrt(xSpeed * xSpeed + ySpeed * ySpeed) * facing;
-		let touching = getPixel(currentLevelX, currentLevelY);
+		let touching = getPixel((x.v / levelScale) | 0, currentLevelY);
 		let index = 0;
 		// Play music
 		if ((isPressed || !touching) && !((tickCount = ++tickCount % (tempo * spriteSheetHeight)) % tempo)) {
@@ -248,20 +246,20 @@ spriteSheet.onload = _ => {
 		}
 
 		// Determine flight behavior based on control input and angle of attack
-		if (isPressed && math.abs(angleDifference(direction.v, velocityDirection)) < 0.5) {
+		if (isPressed && abs(angleDifference(direction.v, velocityDirection)) < 0.5) {
 			// Pitch up
-			direction.v -= facing * 0.14;
+			direction.v -= facing * 0.2;
 
 			// Match velocity direction with pointing direction.
 			ySpeed = math.sin(direction.v) * speed;
 			xSpeed = math.cos(direction.v) * speed;
 		} else {
 			// Pitch to direction of travel
-			direction.v = direction.v + angleDifference(direction.v, velocityDirection) * 0.2;
+			direction.v = direction.v + angleDifference(direction.v, velocityDirection) * 0.3;
 		}
 
 		// Flip to face direction of travel
-		if ((touching || !isPressed) && (sign(xSpeed) || facing) != facing) {
+		if ((!isPressed || touching) && (sign(xSpeed) || facing) != facing) {
 			facing *= -1;
 			direction.v += pi;
 			direction.p += pi;
@@ -272,38 +270,29 @@ spriteSheet.onload = _ => {
 
 		// Collision physics
 		if (touching) {
+			// Move to previous location to prevent clipping through
 			x.v = x.p;
 			y.v = y.p;
 
-			// Horizontal collision check
-			if (!getPixel(previousLevelX - xDirection, currentLevelY)) {
-				// Bounce off wall
-				xSpeed = math.abs(xSpeed) * xDirection * -0.3;
-			}
+			// Bounce
+			xSpeed = isPressed ? abs(xSpeed) * xDirection * -0.5 : 0;
+			ySpeed = abs(ySpeed) * yDirection * -0.1
 
-			// Vertical collision check
-			if (!getPixel(currentLevelX, previousLevelY - yDirection)) {
-				// Snap to floor or ceiling
-				y.v = (currentLevelY + (yDirection > 0 ? 0 : 1)) * levelScale;
-				// Bounce off floor or ceiling
-				ySpeed = math.abs(ySpeed) * (yDirection || 1) * -0.3;
-				// Boost
-				if (isPressed && ySpeed <= 0) {
-					playSound(220);
-					ySpeed -= 4;
-					xSpeed += facing;
-				}
-			}
+			// Point towards the velocity vector.
+			direction.v = velocityDirection;
+
 			if (isPressed) {
-				// If touching ground, point towards the velocity vector
-				direction.v = velocityDirection;
+				if (ySpeed <= 0) {
+					// Jump
+					playSound(220);
+					ySpeed = -6;
+					xSpeed = facing * 2;
+				}
 			} else {
-				if (math.abs(speed) < 2) {
+				if (abs(speed) < 2 && ySpeed <= 0) {
 					// Stand still
 					direction.v = frame = xSpeed = ySpeed = 0;
-				} else {
-					// Slow down
-					xSpeed *= 0.7;
+					y.v = currentLevelY * levelScale;
 				}
 			}
 		}

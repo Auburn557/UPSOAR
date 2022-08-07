@@ -191,7 +191,11 @@ let spriteSheet = new Image();
 let spriteSheetData;
 
 // Load the image
-spriteSheet.src = "{SPRITE_URL}";
+spriteSheet.src = URL.createObjectURL(
+	new Blob([
+		new Uint16Array(/** @type {*} */("{SPRITE_URL}".match(/.{5}/g)))
+	])
+);
 spriteSheet.onload = _ => {
 	// Retrieve pixels from image
 	graphics.drawImage(spriteSheet, 0, 0);

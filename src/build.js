@@ -47,7 +47,16 @@ function optimizePNG(buffer) {
 const spriteSheetURL = async function () {
 	const png = await fs.readFile("./src/sprite-sheet.png");
 	const crunchedPng = await optimizePNG(png);
-	return "DATA:;BASE64," + crunchedPng.toString("base64");
+	if (crunchedPng.length % 2 !== 0) {
+		throw new Error(
+			"The size of the sprite sheet is not divisible by 2: " + crunchedPng.length
+		);
+	}
+	const hextets = [];
+	for (let i = 0; i < crunchedPng.length;) {
+		hextets.push(crunchedPng[i++] | (crunchedPng[i++] << 8));
+	}
+	return hextets.map(hextet => hextet.toString().padStart(5, "0")).join("");
 }();
 
 /**
@@ -108,7 +117,7 @@ const modeOverhead = 4;
  * }>}
  */
 const segmentInfo = {
-	Number: {
+	Numeric: {
 		bitNumerator: 10,
 		bitDenominator: 3,
 		overhead: [10, 12, 14]

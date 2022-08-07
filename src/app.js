@@ -71,9 +71,19 @@ let frameFlying1 = dragonHeight;
 let frameFlying2 = dragonHeight * 2;
 let screenXOffset = 150;
 let screenYOffset = 75;
+let backgroundX = -23;
 
 /** A pixel in the level will be this many pixels on the game canvas. */
 let levelScale = 30;
+
+/** A pixel in the background will be this many pixels wide on the game canvas. */
+let backgroundXScale = 120;
+
+/** A pixel in the background will be this many pixels tall on the game canvas. */
+let backgroundYScale = 60;
+
+/** The amount of parallax to apply to the background. Values closer to 0 apply more parallax. */
+let backgroundParallax = 0.5;
 
 /**
  * The singular control for the game. `0` and `undefined` are released, `1` is pressed.
@@ -151,6 +161,16 @@ let render = _ => {
 
 	// Clear the screen
 	graphics.fillRect(0, 0, 300, 150);
+
+	// Draw background
+	graphics.globalAlpha = 0.2;
+	graphics.drawImage(
+		spriteSheet, // image to draw
+		(backgroundX * backgroundXScale) - interpolate(x) * backgroundParallax, // destination x
+		-interpolate(y) * backgroundParallax, // destination y
+		spriteSheetWidth * backgroundXScale, // destination width
+		spriteSheetHeight * backgroundYScale // destination height
+	);
 
 	// Draw level
 	graphics.globalAlpha = 0.7;

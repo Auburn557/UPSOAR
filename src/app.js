@@ -86,9 +86,9 @@ let backgroundYScale = 60;
 let backgroundParallax = 0.5;
 
 /**
- * The singular control for the game. `0` and `undefined` are released, `1` is pressed.
+ * The singular control for the game. `0` and `undefined` are released, any other number is pressed.
  * Clicking, tapping, or pressing a key will active this control.
- * @type {1 | 0 | undefined}
+ * @type {number | undefined}
  */
 let isPressed;
 
@@ -237,6 +237,7 @@ spriteSheet.onload = _ => {
 	// Control input
 	onkeydown = onpointerdown = /** @type {(event: *) => *} */(_ => isPressed = 1);
 	onkeyup = onpointerup = /** @type {(event: *) => *} */(_ => isPressed = 0);
+	ontouchstart = ontouchend = event => isPressed = event.touches.length;
 
 	// Set sky color
 	graphics.fillStyle = "#112";

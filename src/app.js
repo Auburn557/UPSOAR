@@ -303,7 +303,7 @@ spriteSheet.onload = _ => {
 			}
 
 			// Flying animation
-			frame = frame < frameFlying2 ? frameFlying2 : frameFlying1;
+			frame = frame < frameFlying2 && isPressed ? frameFlying2 : frameFlying1;
 
 			// Collision physics
 			if (touching) {

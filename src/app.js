@@ -99,14 +99,13 @@ let facing = 1;
  * The horizontal coordinate of the dragon in pixels. Greater numbers are to the right.
  * @type {Interpolation}
  */
-let x = { v: 39 * levelScale };
+let x = { v: 39.9 * levelScale };
 
 /**
  * The vertical coordinate of the dragon in pixels. Greater numbers are downward.
  * @type {Interpolation}
  */
-//let y = { v: 59 * levelScale };
-let y = { v: 2 * levelScale };
+let y = { v: 54 * levelScale };
 
 /**
  * The horizontal component of the dragon's velocity. Greater numbers are to the right.
@@ -173,7 +172,7 @@ let render = _ => {
 	);
 
 	// Draw level
-	graphics.globalAlpha = 0.7;
+	graphics.globalAlpha = 0.8;
 	graphics.drawImage(
 		spriteSheet, // image to draw
 		screenXOffset - interpolate(x), // destination x
@@ -253,7 +252,7 @@ spriteSheet.onload = _ => {
 		let xDirection = sign(x.v - x.p);
 		let yDirection = sign(y.v - y.p);
 		let velocityDirection = math.atan2(ySpeed * facing, xSpeed * facing);
-		let speed = math.sqrt(xSpeed * xSpeed + ySpeed * ySpeed) * facing;
+		let speed = (math.sqrt(xSpeed * xSpeed + ySpeed * ySpeed) + 0.1) * facing;
 		let touching = getPixel((x.v / levelScale) | 0, currentLevelY);
 		let index = 0;
 		// Play music

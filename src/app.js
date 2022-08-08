@@ -130,6 +130,17 @@ let tempo = 5;
 let audio = new AudioContext();
 let audioOffset = 27;
 
+// Win animation
+
+/**
+ * The current win condition. `0` is not won yet, `1` is currently playing win animation, and `2`
+ * is win animation complete.
+ * @type {0 | 1 | 2}
+ */
+let winState = 0;
+let winX = 37.5 * levelScale;
+let winY = 3 * levelScale;
+
 /**
  * 
  * @param {number} frequency
@@ -256,68 +267,92 @@ spriteSheet.onload = _ => {
 		let touching = getPixel((x.v / levelScale) | 0, currentLevelY);
 		let index = 0;
 		// Play music
-		if ((isPressed || !touching) && !((tickCount = ++tickCount % (tempo * spriteSheetHeight)) % tempo)) {
+		if (
+			(frame || winState == 1) &&
+			!((tickCount = ++tickCount % (tempo * spriteSheetHeight)) % tempo)
+		) {
 			while (index < 5 - y.v / (levelScale * spriteSheetHeight / 4)) {
 				playSound(
-					[0, 139, 147, 185][getPixel(audioOffset + index, (tickCount / tempo) | 0) & 3] * index++,
+					[0, 139, 147, 185][getPixel(audioOffset + index, (tickCount / tempo) | 0) & 3] *
+					index++ *
+					(winState == 1 ? 2 : 1),
 				);
 			}
 		}
 
-		// Determine flight behavior based on control input and angle of attack
-		if (isPressed && abs(angleDifference(direction.v, velocityDirection)) < 0.5) {
-			// Pitch up
-			direction.v -= facing * 0.2;
+		if (winState != 1) {
+			// Determine flight behavior based on control input and angle of attack
+			if (isPressed && abs(angleDifference(direction.v, velocityDirection)) < 0.5) {
+				// Pitch up
+				direction.v -= facing * 0.2;
 
-			// Match velocity direction with pointing direction.
-			ySpeed = math.sin(direction.v) * speed;
-			xSpeed = math.cos(direction.v) * speed;
-		} else {
-			// Pitch to direction of travel
-			direction.v = direction.v + angleDifference(direction.v, velocityDirection) * 0.3;
-		}
-
-		// Flip to face direction of travel
-		if ((!isPressed || touching) && (sign(xSpeed) || facing) != facing) {
-			facing *= -1;
-			direction.v += pi;
-			direction.p += pi;
-		}
-
-		// Flying animation
-		frame = frame < frameFlying2 ? frameFlying2 : frameFlying1;
-
-		// Collision physics
-		if (touching) {
-			// Move to previous location to prevent clipping through
-			x.v = x.p;
-			y.v = y.p;
-
-			// Bounce
-			xSpeed = isPressed ? abs(xSpeed) * xDirection * -0.5 : 0;
-			ySpeed = abs(ySpeed) * yDirection * -0.1
-
-			// Point towards the velocity vector.
-			direction.v = velocityDirection;
-
-			if (isPressed) {
-				if (ySpeed <= 0) {
-					// Jump
-					playSound(220);
-					ySpeed = -6;
-					xSpeed = facing * 2;
-				}
+				// Match velocity direction with pointing direction.
+				ySpeed = math.sin(direction.v) * speed;
+				xSpeed = math.cos(direction.v) * speed;
 			} else {
-				if (abs(speed) < 2 && ySpeed <= 0) {
-					// Stand still
-					direction.v = frame = xSpeed = ySpeed = 0;
-					y.v = currentLevelY * levelScale;
+				// Pitch to direction of travel
+				direction.v = direction.v + angleDifference(direction.v, velocityDirection) * 0.3;
+			}
+
+			// Flip to face direction of travel
+			if ((!isPressed || touching) && (sign(xSpeed) || facing) != facing) {
+				facing *= -1;
+				direction.v += pi;
+				direction.p += pi;
+			}
+
+			// Flying animation
+			frame = frame < frameFlying2 ? frameFlying2 : frameFlying1;
+
+			// Collision physics
+			if (touching) {
+				// Move to previous location to prevent clipping through
+				x.v = x.p;
+				y.v = y.p;
+
+				// Bounce
+				xSpeed = isPressed ? abs(xSpeed) * xDirection * -0.5 : 0;
+				ySpeed = abs(ySpeed) * yDirection * -0.1
+
+				// Point towards the velocity vector.
+				direction.v = velocityDirection;
+
+				if (isPressed) {
+					if (ySpeed <= 0) {
+						// Jump
+						playSound(220);
+						ySpeed = -6;
+						xSpeed = facing * 2;
+					}
+				} else {
+					if (abs(speed) < 2 && ySpeed <= 0) {
+						// Stand still
+						direction.v = frame = xSpeed = ySpeed = 0;
+						y.v = currentLevelY * levelScale;
+					}
 				}
 			}
-		}
 
-		// Adjust direction interpolation to prevent jank.
-		direction.p = direction.v + angleDifference(direction.v, direction.p);
+			// Adjust direction interpolation to prevent jank.
+			direction.p = direction.v + angleDifference(direction.v, direction.p);
+
+			// Start win animation
+			if (!winState && x.v < winX && y.v < winY) {
+				winState = 1;
+				tickCount = 48 * tempo - 1;
+			}
+		} else {
+			// Play win animation
+			xSpeed = ySpeed = direction.v = 0;
+			x.v = winX;
+			y.v = winY;
+			frame = ((tickCount % tempo) / (tempo / 2)) | 0 ? frameStanding : frameFlying1;
+			facing = ((tickCount % (tempo * 2)) / tempo) | 0 ? -1 : 1;
+
+			if (!tickCount) {
+				winState = 2;
+			}
+		}
 
 		// Reset game if dragon goes out of bounds.
 		if (y.v > (spriteSheetHeight + 1) * levelScale) {

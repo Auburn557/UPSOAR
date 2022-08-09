@@ -4,7 +4,8 @@
   "description": "",
   "private": true,
   "scripts": {
-    "build": "node src/build.js"
+    "build": "node src/build.js",
+    "jekyll": "bundle exec jekyll build"
   },
   "keywords": [],
   "author": "",

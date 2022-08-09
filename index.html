@@ -1,0 +1,101 @@
+---
+# Front matter is required to process Liquid templates.
+---
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta name="charset" content="utf-8">
+	<title>UPSOAR</title>
+	<style>
+		body {
+			background-color: #111;
+			color: #cedbec;
+			font-family: sans-serif;
+			margin: 0;
+			padding: 0;
+			padding-bottom: 50vh;
+		}
+
+		body>* {
+			max-width: 600px;
+			margin-left: auto;
+			margin-right: auto;
+			padding-left: 5px;
+			padding-right: 5px;
+		}
+
+		a {
+			color: #47bfcf;
+		}
+
+		h1,
+		h2 {
+			text-align: center;
+		}
+
+		h1 {
+			font-size: 3em;
+		}
+
+		#data-url {
+			display: block;
+			background-color: #333;
+			max-width: 1000px;
+			word-break: break-all;
+		}
+
+		#qr-code {
+			image-rendering: pixelated;
+			display: block;
+			width: 100%;
+			max-width: 95vmin;
+			margin: 0 auto;
+		}
+
+		@media print {
+			body {
+				padding: 1cm;
+				background-color: none;
+				color: #000;
+			}
+
+			body>* {
+				max-width: none;
+				padding-left: 5px;
+				padding-right: 5px;
+			}
+
+			.no-print,
+			#data-url {
+				display: none;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<h1>UPSOAR</h1>
+	<p>
+		UPSOAR is a browser game that fits on a single QR code. To play, just scan the QR code
+		below, copy the text, then paste it into a web browser's address bar. It will probably be
+		fussy! Try getting a perfect focus and adjusting your zoom or lighting.
+	</p>
+	<p class="no-print">
+		Alternatively, skip the gimmick and just <a href="./app/">play here</a>.
+	</p>
+	<img id="qr-code" src="./app/qr-code.png">
+	<p class="no-print">
+		Yet another method of playing is by pasting the URL below into a web browser's address bar.
+		You can even bookmark it if you want to be able to play offline.
+	</p>
+	<code id="data-url" class="no-print">{{ site.data.report.dataURL }}</code>
+	<h2 class="no-print">How to Play</h2>
+	<p class="no-print">
+		There's just 1 control: press to go up, release to go down. You can touch the screen,
+		click the mouse, or press a key on the keyboard. The rest is up to you! Can you get to the
+		top?
+	</p>
+</body>
+
+</html>

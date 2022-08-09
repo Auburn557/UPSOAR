@@ -154,7 +154,7 @@ const bits = qrCode
 const qrCodeFile = async function () {
 	const qrCodePNG = await optimizePNG(await QRCode.toBuffer(qrCode.segments, {
 		errorCorrectionLevel: "L",
-		margin: 8,
+		margin: 20,
 		scale: 1
 	}));
 	await fs.writeFile("app/qr-code.png", qrCodePNG, "binary")
@@ -172,7 +172,7 @@ const report = JSON.stringify({
 	bytesLeft: (version40Bits - bits) / 8,
 	dataURL: appURL
 }, undefined, "\t");
-const reportFile = fs.writeFile("app/report.json", report, "utf8");
+const reportFile = fs.writeFile("_data/report.json", report, "utf8");
 
 await HTMLFile;
 await URLFile;

@@ -154,7 +154,7 @@ const bits = qrCode
 const qrCodeFile = async function () {
 	const qrCodePNG = await optimizePNG(await QRCode.toBuffer(qrCode.segments, {
 		errorCorrectionLevel: "L",
-		margin: 4,
+		margin: 8,
 		scale: 1
 	}));
 	await fs.writeFile("app/qr-code.png", qrCodePNG, "binary")
